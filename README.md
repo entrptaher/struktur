@@ -68,10 +68,62 @@ The function returns a JSON string containing:
 - Number of candidate structures found
 - Execution time statistics
 
+## Usage with Puppeteer
+
+Here's how to use Struktur.js with Puppeteer for web scraping:
+
+```javascript
+const puppeteer = require('puppeteer');
+
+async function scrapeWithStruktur() {
+  // Launch browser with specific configurations
+  const browser = await puppeteer.launch({
+    headless: false,
+    args: [
+      '--window-size=1920,1040',
+      '--start-fullscreen',
+      '--hide-scrollbars',
+      '--disable-notifications'
+    ]
+  });
+
+  // Create new page and configure viewport
+  const page = await browser.newPage();
+  await page.setBypassCSP(true);
+  await page.setViewport({ 
+    width: 1920, 
+    height: 1040 
+  });
+
+  // Navigate to target URL
+  await page.goto('https://duckduckgo.com', {
+    waitUntil: 'networkidle0'
+  });
+
+  // Wait for content to load
+  await page.waitForTimeout(1000);
+
+  // Inject Struktur.js into the page
+  await page.addScriptTag({path: 'struktur.js'});
+
+  // Execute Struktur with custom configuration
+  const result = await page.evaluate(() => {
+    const config = {
+      N: 6,
+      minWidth: 200,
+      minHeight: 100,
+      highlightStruktur: true,
+      fulltext: false,
+      errorMargin: 0.125
+    };
+    return struktur(config);
+  });
+
+  await browser.close();
+  return result;
+}
+```
+
 ## License
 
-MIT License - Copyright (c) 2019 Nikolai Tschacher (incolumitas.com)[1][2]
-
-Citations:
-[1] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/13888986/d55a2ba6-c0f1-45a8-997c-41042d9e5ded/paste.txt
-[2] https://ppl-ai-file-upload.s3.amazonaws.com/web/direct-files/13888986/d55a2ba6-c0f1-45a8-997c-41042d9e5ded/paste.txt
+MIT License - Copyright (c) 2019 Nikolai Tschacher (incolumitas.com)
