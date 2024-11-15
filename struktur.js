@@ -404,5 +404,5 @@ function struktur(config = {}) {
   }
 
   let struktur = new Struktur(config);
-  return JSON.stringify(struktur.struktur(), null, 2);
+  return struktur.struktur();
 }
